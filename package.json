@@ -1,0 +1,16 @@
+{
+  "name": "nutshell",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "LLM-powered text summarization CLI",
+  "bin": {
+    "nutshell": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.0.0",
+    "typescript": "^5.3.0"
+  },
+  "scripts": {
+    "cli": "bun run src/index.ts"
+  }
+}
