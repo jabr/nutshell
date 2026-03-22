@@ -187,7 +187,7 @@ Text:
 ## Usage
 
 ```
-nutshell [--verbose] <command>[:<role>] [arguments]
+nutshell [--verbose] <command>[:<role>] ["instructions"]
 
 Commands:
   summarize[:<role>]    Summarize text from stdin
