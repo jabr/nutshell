@@ -1,8 +1,9 @@
-#!/usr/bin/env bun
-
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import { homedir } from "os";
+
+import { debug } from "./config";
+import { estimateTokens } from "./llm";
 
 const PROMPTS_DIR = resolve(homedir(), ".config", "nutshell", "prompts");
 
@@ -41,7 +42,8 @@ export function loadPrompt(roleName?: string): string {
 
 export function formatPrompt(
   roleName: string | undefined,
-  params: { text: string; instructions?: string }
+  params: { text: string; instructions?: string },
+  verbose = false
 ): string {
   const template = loadPrompt(roleName);
   const { text, instructions } = params;
@@ -53,6 +55,14 @@ export function formatPrompt(
   });
 
   result = result.replace(/\{instructions\}/g, instructions || "");
+
+  if (verbose) {
+    debug(`  Input tokens (est): ${estimateTokens(result)}`);
+    debug("\nComposed Prompt:");
+    debug(">>>>>>>>");
+    debug(result);
+    debug("<<<<<<<<\n");
+  }
 
   return result;
 }

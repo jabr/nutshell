@@ -34,13 +34,8 @@ export class LLMError extends Error {
 
 export async function completion(
   config: ResolvedConfig,
-  template: string,
-  text: string
+  content: string
 ): Promise<string> {
-  const content = template
-    .replace(/\{text\}/g, text)
-    .replace(/\{instructions\}/g, text);
-
   const messages: ChatMessage[] = [{ role: "user", content }];
 
   const body: ChatRequest = {

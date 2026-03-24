@@ -62,9 +62,14 @@ export function loadConfig(): Config {
   return config;
 }
 
+export function debug(text: string) {
+  console.error(`\x1b[2;37m${text}\x1b[0m`);
+}
+
 export function resolveRole(
   config: Config,
-  roleName?: string
+  roleName?: string,
+  verbose = false,
 ): ResolvedConfig {
   const targetRoleName = roleName || "default";
   const role = config.role[targetRoleName];
@@ -84,6 +89,24 @@ export function resolveRole(
     name: targetRoleName,
     ...role.options,
   };
+
+  if (verbose) {
+    debug("\nLLM Call:");
+    debug(`  Role: ${targetRoleName}`);
+    debug(`  Provider: ${role.uses}`);
+    debug(`  Endpoint: ${resolved.base_url}/chat/completions`);
+    debug(`  Model: ${resolved.model}`);
+    debug(`  Temperature: ${resolved.temperature}`);
+    debug(`  Top_p: ${resolved.top_p}`);
+    debug(`  Top_k: ${resolved.top_k}`);
+    debug(`  Max context: ${resolved.max_context}`);
+    if (resolved.chat_template_kwargs) {
+      debug(`  chat_template_kwargs: ${JSON.stringify(resolved.chat_template_kwargs)}`);
+    }
+    if (resolved.provider) {
+      debug(`  provider: ${JSON.stringify(resolved.provider)}`);
+    }
+  }
 
   return resolved;
 }

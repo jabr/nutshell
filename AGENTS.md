@@ -15,8 +15,7 @@ nutshell/
 │   │   ├── fetchers/
 │   │   │   ├── index.ts  # Fetcher registry
 │   │   │   └── jina.ts   # Jina AI fetcher
-│   │   └── prompts/
-│   │       └── index.ts  # Prompt loading and formatting
+│   │   └── prompts.ts    # Prompt loading and formatting
 │   └── types.ts          # TypeScript interfaces
 ├── samples/
 │   ├── config.toml       # Sample configuration
