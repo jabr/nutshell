@@ -124,6 +124,15 @@ api_key = ""
 | `uses` | string | **Required.** Provider name to use |
 | `options` | table | Optional overrides (see below) |
 
+### Role Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `uses` | string | **Required.** Provider name to use |
+| `options` | table | Optional overrides (see below) |
+| `on_overflow` | string | Message when input exceeds max context |
+| `on_error` | string | Message when LLM request fails |
+
 ### Role Options
 
 Role options override parameters from the referenced provider:
@@ -137,6 +146,20 @@ Role options override parameters from the referenced provider:
 | `frequency_penalty` | number | Override provider's frequency_penalty |
 | `chat_template_kwargs` | table | Override provider's chat_template_kwargs |
 | `provider` | table | Override provider's provider params |
+
+### Fallback Messages
+
+For agent-focused roles, configure `on_overflow` and `on_error` to provide actionable guidance instead of detailed error messages:
+
+```toml
+[role.agent]
+uses = "openrouter"
+on_overflow = "Input too large. Use head/tail to page through the text or grep for specific patterns."
+on_error = "Failed to summarize. Use another tool."
+options = { model = "anthropic/claude-3.5-sonnet", temperature = 0.3 }
+```
+
+When these are set, the configured message prints to stdout and the command exits cleanly (exit code 0). Without these, standard error messages are printed to stderr with exit code 1.
 
 ### Web Fetching
 

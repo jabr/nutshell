@@ -35,7 +35,14 @@ export async function summarizeCommand(
     instructions,
   }, options.verbose);
 
-  const summary = await completion(resolved, composedPrompt);
-
-  console.log(summary);
+  try {
+    const summary = await completion(resolved, composedPrompt);
+    console.log(summary);
+  } catch {
+    if (resolved.on_error) {
+      console.log(resolved.on_error);
+      process.exit(0);
+    }
+    throw new Error("Failed to summarize text. Use another tool.");
+  }
 }

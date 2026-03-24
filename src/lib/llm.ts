@@ -99,6 +99,10 @@ export function validateContext(
 ): void {
   const tokens = estimateTokens(text);
   if (tokens > config.max_context) {
+    if (config.on_overflow) {
+      console.log(config.on_overflow);
+      process.exit(0);
+    }
     throw new LLMError(
       `Input requires ~${tokens} tokens, but "${config.model}" ` +
         `has max context of ${config.max_context} tokens.\n` +

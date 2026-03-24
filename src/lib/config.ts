@@ -87,6 +87,8 @@ export function resolveRole(
   const resolved: ResolvedConfig = {
     ...provider,
     name: targetRoleName,
+    on_overflow: role.on_overflow,
+    on_error: role.on_error,
     ...role.options,
   };
 

@@ -2,44 +2,11 @@
 # Copy this to ~/.config/nutshell/config.toml and update with your settings
 
 # Provider configs
-[provider.openai]
-api_key = "your-api-key-here"
-base_url = "https://api.openai.com/v1"
-max_context = 128000
-model = "gpt-4"
-temperature = 0.7
-top_p = 1.0
-top_k = 50
-presence_penalty = 0.0
-frequency_penalty = 0.0
-
-[provider.openai-quick]
-api_key = "your-api-key-here"
-base_url = "https://api.openai.com/v1"
-max_context = 4000
-model = "gpt-3.5-turbo"
-temperature = 0.5
-top_p = 1.0
-top_k = 50
-presence_penalty = 0.0
-frequency_penalty = 0.0
-
-[provider.openai-deep]
-api_key = "your-api-key-here"
-base_url = "https://api.openai.com/v1"
-max_context = 128000
-model = "gpt-4"
-temperature = 0.2
-top_p = 1.0
-top_k = 50
-presence_penalty = 0.0
-frequency_penalty = 0.0
-
 [provider.ollama-fast]
 api_key = "ollama"
 base_url = "http://localhost:11434/v1"
 max_context = 8192
-model = "llama2"
+model = "qwen3.5-0.8B"
 temperature = 0.7
 top_p = 1.0
 top_k = 50
@@ -51,7 +18,7 @@ chat_template_kwargs = { enable_thinking = false }
 api_key = "ollama"
 base_url = "http://localhost:11434/v1"
 max_context = 8192
-model = "llama2"
+model = "qwen3.5-27B"
 temperature = 0.3
 top_p = 1.0
 top_k = 50
@@ -62,41 +29,31 @@ chat_template_kwargs = { enable_thinking = true }
 [provider.openrouter]
 api_key = "your-openrouter-api-key"
 base_url = "https://openrouter.ai/api/v1"
-max_context = 128000
-model = "anthropic/claude-3.5-sonnet"
+max_context = 262144
+model = "xiaomi/mimo-v2-flash"
 temperature = 0.7
 top_p = 1.0
 top_k = 50
 presence_penalty = 0.0
 frequency_penalty = 0.0
-provider = { sort = "throughput" }
+provider = { sort = "latency" }
 
 # Role definitions
 [role.default]
-uses = "openai"
-
-[role.quick]
-uses = "openai-quick"
-
-[role.deep]
-uses = "openai-deep"
-
-[role.local]
-uses = "ollama-fast"
-
-[role.local-thinking]
 uses = "ollama-reasoning"
 
-[role.openrouter-latency]
+[role.quick]
+uses = "ollama-fast"
+
+[role.deep]
 uses = "openrouter"
-options = { provider = { sort = "latency" } }
+options = { provider = { sort = "price" } }
 
 [role.agent]
 uses = "openrouter"
-options = {
-  model = "xiaomi/mimo-v2-flash",
-  temperature = 0.3
-}
+on_overflow = "Input too large. Use head/tail to page through the text or grep for specific patterns."
+on_error = "Failed to summarize. Use another tool."
+options = { temperature = 0.3 }
 
 # Fetcher configs
 [fetchers.jina]

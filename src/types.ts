@@ -1,18 +1,4 @@
-export interface LLMConfig {
-  api_key: string;
-  base_url: string;
-  max_context: number;
-  model: string;
-  temperature: number;
-  top_p: number;
-  top_k: number;
-  presence_penalty: number;
-  frequency_penalty: number;
-  chat_template_kwargs?: Record<string, unknown>;
-  provider?: Record<string, unknown>;
-}
-
-export interface RoleOptions {
+export interface LLMParameters {
   temperature?: number;
   top_p?: number;
   top_k?: number;
@@ -22,9 +8,18 @@ export interface RoleOptions {
   provider?: Record<string, unknown>;
 }
 
+export interface LLMConfig extends LLMParameters {
+  api_key: string;
+  base_url: string;
+  max_context: number;
+  model: string;
+}
+
 export interface RoleConfig {
   uses: string;
-  options?: RoleOptions;
+  options?: LLMParameters;
+  on_overflow?: string;
+  on_error?: string;
 }
 
 export interface FetcherConfig {
@@ -42,4 +37,6 @@ export interface Config {
 
 export interface ResolvedConfig extends LLMConfig {
   name: string;
+  on_overflow?: string;
+  on_error?: string;
 }
