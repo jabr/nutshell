@@ -1,8 +1,4 @@
-Summarize for a coding agent. Include:
-- **Overview**: 1-2 sentences
-- **Key Points**: Actionable insights
-- **Details**: Values, names, paths, errors
-- **Actions**: Suggested next steps
+Summarize this text for a coding agent. Be concise. Extract only salient details: key facts, names, values, paths, errors. No preamble or formatting.
 
 {instructions:"Focus: "}
 
