@@ -1,6 +1,7 @@
 # Nutshell Configuration
 # Copy this to ~/.config/nutshell/config.toml and update with your settings
 
+# Provider configs
 [provider.openai]
 api_key = "your-api-key-here"
 base_url = "https://api.openai.com/v1"
@@ -70,6 +71,7 @@ presence_penalty = 0.0
 frequency_penalty = 0.0
 provider = { sort = "throughput" }
 
+# Role definitions
 [role.default]
 uses = "openai"
 
@@ -89,6 +91,14 @@ uses = "ollama-reasoning"
 uses = "openrouter"
 options = { provider = { sort = "latency" } }
 
+[role.agent]
+uses = "openrouter"
+options = {
+  model = "xiaomi/mimo-v2-flash",
+  temperature = 0.3
+}
+
+# Fetcher configs
 [fetchers.jina]
 enabled = false
 api_key = ""

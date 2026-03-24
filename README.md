@@ -218,3 +218,26 @@ Outputs the summary to stdout and debug info to stderr.
 - **Missing config**: Clear error pointing to expected config path
 - **Missing prompt**: Error with path that needs to be created
 - **API errors**: Forwarded LLM error message and status code
+
+## OpenCode Skill
+
+Nutshell includes an OpenCode skill for use as an AI coding agent tool. The skill enables coding agents to quickly understand large text inputs without reading them in full.
+
+### Installation
+
+An `agent.md` prompt is included in `samples/prompts/` for structured output useful to coding agents. Copy to your config directory:
+```bash
+cp samples/prompts/agent.md ~/.config/nutshell/prompts/
+```
+
+Add an `agent` role to your `~/.config/nutshell/config.toml`:
+```
+[role.agent]
+uses = "fast-model-with-large-context"
+```
+
+Copy the skill to your OpenCode skills directory:
+```bash
+mkdir -p ~/.config/opencode/skills
+cp -r samples/skills/nutshell ~/.config/opencode/skills/
+```
