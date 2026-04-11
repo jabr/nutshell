@@ -6,7 +6,7 @@ import { LLMError } from "./lib/llm";
 import { PromptNotFoundError } from "./lib/prompts";
 
 interface CliOptions {
-  verbose: boolean;
+  debug: boolean;
 }
 
 function parseArgs(args: string[]): {
@@ -15,12 +15,12 @@ function parseArgs(args: string[]): {
   roleName: string | undefined;
   remainingArgs: string[];
 } {
-  const options: CliOptions = { verbose: false };
+  const options: CliOptions = { debug: false };
   const remaining: string[] = [];
 
   for (const arg of args) {
-    if (arg === "-v" || arg === "--verbose") {
-      options.verbose = true;
+    if (arg === "-d" || arg === "--debug") {
+      options.debug = true;
     } else if (arg === "-h" || arg === "--help") {
       options.help = true;
     } else {
@@ -55,9 +55,9 @@ async function main() {
 
   if (rawArgs.length === 0) {
     console.error(`Usage:
-  nutshell [--verbose] summarize[:role] [instructions]
-  echo "text" | nutshell [--verbose] summarize[:role]
-  nutshell [--verbose] fetch[:role] <url> [instructions]
+  nutshell [--debug] summarize[:role] [instructions]
+  echo "text" | nutshell [--debug] summarize[:role]
+  nutshell [--debug] fetch[:role] <url> [instructions]
   nutshell --help`);
     process.exit(1);
   }
@@ -68,12 +68,12 @@ async function main() {
     console.error(`Nutshell - LLM Summarization CLI
 
 Usage:
-  nutshell [--verbose] summarize[:role] [instructions]
-  echo "text" | nutshell [--verbose] summarize[:role]
-  nutshell [--verbose] fetch[:role] <url> [instructions]
+  nutshell [--debug] summarize[:role] [instructions]
+  echo "text" | nutshell [--debug] summarize[:role]
+  nutshell [--debug] fetch[:role] <url> [instructions]
 
 Options:
-  -v, --verbose    Print debug info (URL, model, prompt)
+  -d, --debug    Print debug info (URL, model, prompt, errors)
 
 Commands:
   summarize[:role]  Summarize text from stdin
@@ -82,7 +82,7 @@ Commands:
 Examples:
   cat file.txt | nutshell summarize
   cat file.txt | nutshell summarize:quick "focus on numbers"
-  nutshell --verbose fetch https://example.com
+  nutshell --debug fetch https://example.com
   nutshell fetch:local https://example.com`);
     process.exit(0);
   }
@@ -116,6 +116,9 @@ Examples:
   } catch (e) {
     if (e instanceof LLMError) {
       console.error(`Error: ${e.message}`);
+      if (options.debug && e.errorData) {
+        console.error(`  Error data: ${JSON.stringify(e.errorData, null, 2)}`);
+      }
       if (e.statusCode) {
         process.exit(e.statusCode >= 500 ? 1 : 0);
       }

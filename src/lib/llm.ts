@@ -1,4 +1,5 @@
-import type { ResolvedConfig } from "../types";
+import { debug } from "./config";
+import type { ResolvedConfig, CliOptions } from "../types";
 
 interface ChatMessage {
   role: "user";
@@ -25,7 +26,8 @@ interface ChatResponse {
 export class LLMError extends Error {
   constructor(
     message: string,
-    public statusCode?: number
+    public statusCode?: number,
+    public errorData?: Record<string, unknown>
   ) {
     super(message);
     this.name = "LLMError";
@@ -34,7 +36,8 @@ export class LLMError extends Error {
 
 export async function completion(
   config: ResolvedConfig,
-  content: string
+  content: string,
+  options: CliOptions = { debug: false }
 ): Promise<string> {
   const messages: ChatMessage[] = [{ role: "user", content }];
 
@@ -46,16 +49,24 @@ export async function completion(
     top_k: config.top_k,
     presence_penalty: config.presence_penalty,
     frequency_penalty: config.frequency_penalty,
+    max_tokens: 1024,
     ...(config.chat_template_kwargs && { chat_template_kwargs: config.chat_template_kwargs }),
     ...(config.provider && { provider: config.provider }),
   };
 
   const apiKey =
     config.api_key || process.env.OPENAI_API_KEY || "";
+  // console.log(apiKey)
 
   const url = config.base_url.endsWith("/")
     ? `${config.base_url}chat/completions`
     : `${config.base_url}/chat/completions`;
+
+  if (options.debug) {
+    debug("\nAPI Call:");
+    debug(`  URL: ${url}`);
+    debug(`  Body: ${JSON.stringify(body, null, 2)}`);
+  }
 
   const response = await fetch(url, {
     method: "POST",
@@ -71,7 +82,8 @@ export async function completion(
     const errorData = (await response.json().catch(() => ({}))) as ChatResponse;
     throw new LLMError(
       errorData?.error?.message || `API error: ${response.status}`,
-      response.status
+      response.status,
+      errorData
     );
   }
 

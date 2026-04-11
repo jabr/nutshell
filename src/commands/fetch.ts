@@ -1,21 +1,18 @@
 import { fetchPage } from "../lib/fetchers";
 import { loadConfig, resolveRole, debug } from "../lib/config";
-import { validateContext, completion } from "../lib/llm";
+import { validateContext, completion, LLMError } from "../lib/llm";
 import { formatPrompt } from "../lib/prompts";
-
-interface CliOptions {
-  verbose: boolean;
-}
+import type { CliOptions } from "../types";
 
 export async function fetchCommand(
   url: string,
   roleName: string | undefined,
   instructions: string,
-  options: CliOptions = { verbose: false }
+  options: CliOptions = { debug: false }
 ): Promise<void> {
   const config = loadConfig();
 
-  if (options.verbose) {
+  if (options.debug) {
     debug("\nFetch:");
     debug(`  URL: ${url}`);
     const jinaConfig = config.fetchers?.jina;
@@ -33,18 +30,24 @@ export async function fetchCommand(
     content = `Title: ${page.title}\n\n${content}`;
   }
 
-  const resolved = resolveRole(config, roleName, options.verbose);
+  const resolved = resolveRole(config, roleName, options);
   validateContext(content, resolved);
 
   const composedPrompt = formatPrompt(roleName, {
     text: content,
     instructions,
-  }, options.verbose);
+  }, options);
 
   try {
-    const summary = await completion(resolved, composedPrompt);
+    const summary = await completion(resolved, composedPrompt, options);
     console.log(summary);
-  } catch {
+  } catch (e) {
+    if (options.debug) {
+      console.error(`Debug: ${e instanceof Error ? e.message : String(e)}`);
+      if (e instanceof LLMError && e.errorData) {
+        console.error(`  Error data: ${JSON.stringify(e.errorData, null, 2)}`);
+      }
+    }
     if (resolved.on_error) {
       console.log(resolved.on_error);
       process.exit(0);

@@ -40,3 +40,7 @@ export interface ResolvedConfig extends LLMConfig {
   on_overflow?: string;
   on_error?: string;
 }
+
+export interface CliOptions {
+  debug: boolean;
+}

@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import { homedir } from "os";
-import type { Config, ResolvedConfig, LLMConfig } from "../types";
+import type { Config, ResolvedConfig, LLMConfig, CliOptions } from "../types";
 
 const CONFIG_PATH = resolve(
   homedir(),
@@ -69,7 +69,7 @@ export function debug(text: string) {
 export function resolveRole(
   config: Config,
   roleName?: string,
-  verbose = false,
+  options: CliOptions = { debug: false },
 ): ResolvedConfig {
   const targetRoleName = roleName || "default";
   const role = config.role[targetRoleName];
@@ -92,7 +92,7 @@ export function resolveRole(
     ...role.options,
   };
 
-  if (verbose) {
+  if (options.debug) {
     debug("\nLLM Call:");
     debug(`  Role: ${targetRoleName}`);
     debug(`  Provider: ${role.uses}`);

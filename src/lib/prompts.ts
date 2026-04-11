@@ -4,6 +4,7 @@ import { homedir } from "os";
 
 import { debug } from "./config";
 import { estimateTokens } from "./llm";
+import type { CliOptions } from "./types";
 
 const PROMPTS_DIR = resolve(homedir(), ".config", "nutshell", "prompts");
 
@@ -43,7 +44,7 @@ export function loadPrompt(roleName?: string): string {
 export function formatPrompt(
   roleName: string | undefined,
   params: { text: string; instructions?: string },
-  verbose = false
+  options: CliOptions = { debug: false }
 ): string {
   const template = loadPrompt(roleName);
   const { text, instructions } = params;
@@ -56,7 +57,7 @@ export function formatPrompt(
 
   result = result.replace(/\{instructions\}/g, instructions || "");
 
-  if (verbose) {
+  if (options.debug) {
     debug(`  Input tokens (est): ${estimateTokens(result)}`);
     debug("\nComposed Prompt:");
     debug(">>>>>>>>");
