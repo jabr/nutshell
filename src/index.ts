@@ -7,6 +7,37 @@ import { LLMError } from "./lib/llm";
 import { PromptNotFoundError } from "./lib/prompts";
 import type { CliOptions } from "./types";
 
+function printUsage(fullHelp = false) {
+  const lines = [
+    "Usage:",
+    "  nutshell [--debug] summarize[:role] [instructions]",
+    "  echo \"text\" | nutshell [--debug] summarize[:role] [instructions]",
+    "  nutshell [--debug] fetch[:role] <url> [instructions]",
+    "  nutshell [--debug] roles",
+    "  nutshell --help",
+  ];
+  if (fullHelp) {
+    lines.push(
+      "",
+      "Options:",
+      "  -d, --debug    Print debug info (URL, model, prompt, errors)",
+      "",
+      "Commands:",
+      "  summarize (s)    Summarize text from stdin",
+      "  fetch (f) <url>  Fetch URL and summarize",
+      "  roles             List available roles",
+      "",
+      "Examples:",
+      "  cat file.txt | nutshell s",
+      "  cat file.txt | nutshell summarize:quick \"focus on numbers\"",
+      "  nutshell --debug f https://example.com",
+      "  nutshell fetch:local https://example.com",
+      "  nutshell roles"
+    );
+  }
+  console.error(lines.join("\n"));
+}
+
 function parseArgs(args: string[]): {
   options: CliOptions;
   command: string;
@@ -52,45 +83,22 @@ async function main() {
   const rawArgs = process.argv.slice(2);
 
   if (rawArgs.length === 0) {
-    console.error(`Usage:
-  nutshell [--debug] summarize[:role] [instructions]
-  echo "text" | nutshell [--debug] summarize[:role]
-  nutshell [--debug] fetch[:role] <url> [instructions]
-  nutshell [--debug] roles
-  nutshell --help`);
+    printUsage(false);
     process.exit(1);
   }
 
   const { options, command, roleName, remainingArgs } = parseArgs(rawArgs);
 
   if (command === "" || command === "help") {
-    console.error(`Nutshell - LLM Summarization CLI
-
-Usage:
-  nutshell [--debug] summarize[:role] [instructions]
-  echo "text" | nutshell [--debug] summarize[:role]
-  nutshell [--debug] fetch[:role] <url> [instructions]
-  nutshell [--debug] roles
-
-Options:
-  -d, --debug    Print debug info (URL, model, prompt, errors)
-
-Commands:
-  summarize[:role]  Summarize text from stdin
-  fetch[:role] <url>  Fetch URL and summarize
-  roles             List available roles
-
-Examples:
-  cat file.txt | nutshell summarize
-  cat file.txt | nutshell summarize:quick "focus on numbers"
-  nutshell --debug fetch https://example.com
-  nutshell fetch:local https://example.com
-  nutshell roles`);
+    console.error("Nutshell - LLM Summarization CLI");
+    printUsage(true);
     process.exit(0);
   }
 
   try {
-    if (command === "summarize") {
+    const cmd = command === "s" ? "summarize" : command === "f" ? "fetch" : command;
+
+    if (cmd === "summarize") {
       let instructions = "";
 
       if (remainingArgs.length > 0 && !remainingArgs[0].startsWith("-")) {
@@ -98,7 +106,7 @@ Examples:
       }
 
       await summarizeCommand(roleName, instructions, options);
-    } else if (command === "fetch") {
+    } else if (cmd === "fetch") {
       const url = remainingArgs[0];
 
       if (!url) {
