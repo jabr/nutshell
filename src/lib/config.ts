@@ -102,6 +102,10 @@ export function resolveRole(
     debug(`  Top_p: ${resolved.top_p}`);
     debug(`  Top_k: ${resolved.top_k}`);
     debug(`  Max context: ${resolved.max_context}`);
+    if (resolved.max_tokens) debug(`  Max tokens: ${resolved.max_tokens}`);
+    if (resolved.stop) debug(`  Stop: ${JSON.stringify(resolved.stop)}`);
+    if (resolved.response_format) debug(`  Response format: ${JSON.stringify(resolved.response_format)}`);
+    if (resolved.seed != null) debug(`  Seed: ${resolved.seed}`);
     if (resolved.chat_template_kwargs) {
       debug(`  chat_template_kwargs: ${JSON.stringify(resolved.chat_template_kwargs)}`);
     }

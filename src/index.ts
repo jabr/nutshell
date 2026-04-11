@@ -2,12 +2,10 @@
 
 import { summarizeCommand } from "./commands/summarize";
 import { fetchCommand } from "./commands/fetch";
+import { rolesCommand } from "./commands/roles";
 import { LLMError } from "./lib/llm";
 import { PromptNotFoundError } from "./lib/prompts";
-
-interface CliOptions {
-  debug: boolean;
-}
+import type { CliOptions } from "./types";
 
 function parseArgs(args: string[]): {
   options: CliOptions;
@@ -58,6 +56,7 @@ async function main() {
   nutshell [--debug] summarize[:role] [instructions]
   echo "text" | nutshell [--debug] summarize[:role]
   nutshell [--debug] fetch[:role] <url> [instructions]
+  nutshell [--debug] roles
   nutshell --help`);
     process.exit(1);
   }
@@ -71,6 +70,7 @@ Usage:
   nutshell [--debug] summarize[:role] [instructions]
   echo "text" | nutshell [--debug] summarize[:role]
   nutshell [--debug] fetch[:role] <url> [instructions]
+  nutshell [--debug] roles
 
 Options:
   -d, --debug    Print debug info (URL, model, prompt, errors)
@@ -78,12 +78,14 @@ Options:
 Commands:
   summarize[:role]  Summarize text from stdin
   fetch[:role] <url>  Fetch URL and summarize
+  roles             List available roles
 
 Examples:
   cat file.txt | nutshell summarize
   cat file.txt | nutshell summarize:quick "focus on numbers"
   nutshell --debug fetch https://example.com
-  nutshell fetch:local https://example.com`);
+  nutshell fetch:local https://example.com
+  nutshell roles`);
     process.exit(0);
   }
 
@@ -110,6 +112,8 @@ Examples:
       const instructions = remainingArgs.slice(1).join(" ");
 
       await fetchCommand(url, roleName, instructions, options);
+    } else if (command === "roles") {
+      await rolesCommand(options);
     } else {
       throw new Error(`Unknown command: ${command}`);
     }

@@ -4,6 +4,10 @@ export interface LLMParameters {
   top_k?: number;
   presence_penalty?: number;
   frequency_penalty?: number;
+  max_tokens?: number;
+  stop?: string | string[];
+  response_format?: { type: string };
+  seed?: number;
   chat_template_kwargs?: Record<string, unknown>;
   provider?: Record<string, unknown>;
 }

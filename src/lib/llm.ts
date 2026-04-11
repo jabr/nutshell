@@ -14,6 +14,10 @@ interface ChatRequest {
   top_k: number;
   presence_penalty: number;
   frequency_penalty: number;
+  max_tokens?: number;
+  stop?: string | string[];
+  response_format?: { type: string };
+  seed?: number;
   chat_template_kwargs?: Record<string, unknown>;
   provider?: Record<string, unknown>;
 }
@@ -49,7 +53,10 @@ export async function completion(
     top_k: config.top_k,
     presence_penalty: config.presence_penalty,
     frequency_penalty: config.frequency_penalty,
-    max_tokens: 1024,
+    ...(config.max_tokens && { max_tokens: config.max_tokens }),
+    ...(config.stop && { stop: config.stop }),
+    ...(config.response_format && { response_format: config.response_format }),
+    ...(config.seed != null && { seed: config.seed }),
     ...(config.chat_template_kwargs && { chat_template_kwargs: config.chat_template_kwargs }),
     ...(config.provider && { provider: config.provider }),
   };
